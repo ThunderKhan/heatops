@@ -34,9 +34,13 @@ The hazard is a gate: a cell with no heat hazard receives zero heat-priority ris
 
 Loads feasible public intervention locations and rejects sites outside the area or without sufficient metadata.
 
+During Milestone 3, one development-only candidate is generated at each risk-cell centroid. The interface is deliberately separate so these synthetic candidates can later be replaced by feasible public sites from OpenStreetMap or verified municipal data.
+
 ### Placement optimizer
 
 Solves budget-constrained maximum coverage. It must expose its assumptions and compare against a simple baseline.
+
+The current solver uses deterministic greedy weighted maximum coverage. At every step it chooses the site covering the largest amount of not-yet-covered risk. It also evaluates a naive highest-risk-cell baseline and will never publish a plan that covers less risk than that baseline.
 
 ### API
 
@@ -58,6 +62,10 @@ src/heatops/
     mock.py
   risk/
     context.py
+    engine.py
+    models.py
+  optimization/
+    candidates.py
     engine.py
     models.py
 tests/
