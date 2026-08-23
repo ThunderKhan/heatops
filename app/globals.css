@@ -122,9 +122,16 @@ button, select, input[type="range"] { cursor: pointer; }
 .risk-value { justify-self: end; font-variant-numeric: tabular-nums; font-weight: 800; }
 .decision-note { padding: 24px; background: var(--green); color: #fff; }
 .decision-note .eyebrow { color: var(--lime); }
+.brief-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.brief-source { flex: 0 0 auto; padding: 5px 7px; border: 1px solid rgba(216,255,104,.35); border-radius: 3px; color: var(--lime); font-size: 8px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .decision-note h3 { max-width: 260px; font-size: 27px; line-height: 1.05; }
 .decision-note > p:not(.eyebrow):not(.caveat) { color: rgba(255,255,255,.72); font-size: 12px; line-height: 1.65; }
 .decision-note > p strong { color: #fff; }
+.brief-list { display: grid; gap: 8px; margin: 17px 0; padding-left: 19px; color: rgba(255,255,255,.78); font-size: 10px; line-height: 1.45; }
+.brief-list li::marker { color: var(--lime); font-weight: 800; }
+.brief-actions { display: flex; gap: 8px; margin: 16px 0; }
+.brief-actions button { flex: 1; padding: 9px 8px; color: #fff; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.2); border-radius: 3px; font-size: 9px; font-weight: 800; transition: background .18s, color .18s; }
+.brief-actions button:hover { color: var(--ink); background: var(--lime); border-color: var(--lime); }
 .formula { margin: 20px 0; padding: 14px; border: 1px solid rgba(255,255,255,.17); border-radius: 4px; background: rgba(255,255,255,.05); }
 .formula span { display: block; margin-bottom: 7px; color: var(--lime); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
 .formula code { font-size: 11px; white-space: normal; }

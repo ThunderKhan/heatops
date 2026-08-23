@@ -31,4 +31,6 @@ test("renders the HeatOps decision dashboard", async () => {
   assert.match(html, /Run placement analysis/i);
   assert.match(html, /Optimized risk coverage/i);
   assert.match(html, /Synthetic data/i);
+  assert.match(html, /Operational action brief/i);
+  assert.match(html, /Download \.md/i);
 });

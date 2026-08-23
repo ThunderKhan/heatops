@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { DecisionMap } from "@/components/decision-map";
 import { ArrowIcon, LayersIcon, PinIcon, ThermometerIcon, TrendIcon } from "@/components/icons";
-import { requestPlacementPlan } from "@/lib/api";
-import { createDemoResponse } from "@/lib/demo-data";
-import type { HeatMetric, PlacementResponse, RiskLevel, Scenario } from "@/lib/types";
+import { requestDecision } from "@/lib/api";
+import { createDemoDecision } from "@/lib/demo-data";
+import type { ActionBrief, HeatMetric, PlacementResponse, RiskLevel, Scenario } from "@/lib/types";
 
 const DEFAULT_SCENARIO: Scenario = {
   metric: "snapshot",
@@ -14,16 +14,22 @@ const DEFAULT_SCENARIO: Scenario = {
   coverageRadiusKm: 0.75,
 };
 const LEVELS: RiskLevel[] = ["low", "moderate", "high", "critical"];
+const DEFAULT_DECISION = createDemoDecision(DEFAULT_SCENARIO);
 
 export function HeatOpsDashboard() {
   const [scenario, setScenario] = useState(DEFAULT_SCENARIO);
-  const [response, setResponse] = useState<PlacementResponse>(() =>
-    createDemoResponse(DEFAULT_SCENARIO),
-  );
+  const [response, setResponse] = useState<PlacementResponse>(DEFAULT_DECISION.placement);
+  const [brief, setBrief] = useState<ActionBrief>(DEFAULT_DECISION.brief);
   const [isIllustrative, setIsIllustrative] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const topPlacements = response.optimized.placements.slice(0, 5);
+  const heatSource = response.risk_map.features[0]?.properties.heat_source;
+  const provenanceLabel = isIllustrative
+    ? "Synthetic data"
+    : heatSource === "fortyguard"
+      ? "FortyGuard heat · synthetic context"
+      : "Synthetic API data";
   const highPriorityShare = useMemo(() => {
     const counts = response.risk_map.summary.level_counts;
     return Math.round(
@@ -35,11 +41,14 @@ export function HeatOpsDashboard() {
     setIsLoading(true);
     setNotice(null);
     try {
-      const result = await requestPlacementPlan(scenario);
-      setResponse(result);
+      const result = await requestDecision(scenario);
+      setResponse(result.placement);
+      setBrief(result.brief);
       setIsIllustrative(false);
     } catch {
-      setResponse(createDemoResponse(scenario));
+      const fallback = createDemoDecision(scenario);
+      setResponse(fallback.placement);
+      setBrief(fallback.brief);
       setIsIllustrative(true);
       setNotice("The local API is unavailable, so the verified illustrative scenario remains on screen.");
     } finally {
@@ -49,6 +58,27 @@ export function HeatOpsDashboard() {
 
   function updateScenario<Key extends keyof Scenario>(key: Key, value: Scenario[Key]) {
     setScenario((current) => ({ ...current, [key]: value }));
+  }
+
+  function briefMarkdown() {
+    const actions = brief.deployment_actions.map((item, index) => `${index + 1}. ${item}`).join("\n");
+    const watch = brief.watch_items.map((item) => `- ${item}`).join("\n");
+    const limitations = brief.limitations.map((item) => `- ${item}`).join("\n");
+    return `# ${brief.headline}\n\n${brief.situation_summary}\n\n## Deployment actions\n\n${actions}\n\n## Watch items\n\n${watch}\n\n## Limitations\n\n${limitations}\n\nEvidence: ${brief.evidence_fingerprint}\n`;
+  }
+
+  function downloadBrief() {
+    const url = URL.createObjectURL(new Blob([briefMarkdown()], { type: "text/markdown" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "heatops-action-brief.md";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function copyBrief() {
+    await navigator.clipboard.writeText(briefMarkdown());
+    setNotice("Action brief copied to the clipboard.");
   }
 
   return (
@@ -65,7 +95,7 @@ export function HeatOpsDashboard() {
         </div>
         <div className="data-badge">
           <span>{isIllustrative ? "Illustrative" : "API result"}</span>
-          <strong>{response.synthetic ? "Synthetic data" : "Verified data"}</strong>
+          <strong>{provenanceLabel}</strong>
         </div>
       </header>
 
@@ -167,7 +197,9 @@ export function HeatOpsDashboard() {
               <strong>{response.optimized.selected_resource_count} points</strong>
             </div>
             <div className="map-provenance">
-              {response.synthetic ? "Synthetic demonstration layer" : "Verified input layers"}
+              {heatSource === "fortyguard"
+                ? "FortyGuard heat · synthetic risk context"
+                : "Synthetic demonstration layer"}
             </div>
           </div>
 
@@ -223,20 +255,26 @@ export function HeatOpsDashboard() {
             </section>
 
             <aside className="decision-note">
-              <p className="eyebrow">Why this plan wins</p>
-              <h3>Coverage, not temperature alone.</h3>
-              <p>
-                The optimized plan separates resources that would otherwise overlap around the
-                hottest cells. It reaches <strong>{response.optimized.covered_cell_count - response.baseline.covered_cell_count} additional cells</strong> under the same resource constraint.
-              </p>
-              <div className="formula">
-                <span>Risk formula</span>
-                <code>H × (wE·E + wV·V + wA·(1−C))</code>
+              <div className="brief-heading">
+                <p className="eyebrow">Operational action brief</p>
+                <span className="brief-source">
+                  {brief.source === "groq" ? "Groq-grounded AI" : "Verified template"}
+                </span>
               </div>
-              <p className="caveat">
-                Risk coverage is a prioritization proxy. It does not estimate illnesses prevented
-                or lives saved.
-              </p>
+              <h3>{brief.headline}</h3>
+              <p>{brief.situation_summary}</p>
+              <ol className="brief-list">
+                {brief.deployment_actions.slice(0, 3).map((action) => <li key={action}>{action}</li>)}
+              </ol>
+              <div className="brief-actions">
+                <button type="button" onClick={downloadBrief}>Download .md</button>
+                <button type="button" onClick={() => void copyBrief()}>Copy brief</button>
+              </div>
+              <div className="formula">
+                <span>Evidence lock</span>
+                <code>{brief.evidence_fingerprint.slice(0, 16)}… · grounded output</code>
+              </div>
+              <p className="caveat">{brief.limitations[0]}</p>
             </aside>
           </div>
         </section>

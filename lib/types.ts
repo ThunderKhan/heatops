@@ -85,3 +85,20 @@ export interface PlacementResponse {
   synthetic: boolean;
   algorithm: string;
 }
+
+export interface ActionBrief {
+  headline: string;
+  situation_summary: string;
+  deployment_actions: string[];
+  watch_items: string[];
+  limitations: string[];
+  source: "template" | "groq";
+  model: string | null;
+  evidence_fingerprint: string;
+  grounded: true;
+}
+
+export interface DecisionResponse {
+  placement: PlacementResponse;
+  brief: ActionBrief;
+}

@@ -1,5 +1,6 @@
 import type {
   CandidateSite,
+  DecisionResponse,
   HeatMetric,
   PlacementPlan,
   PlacementResponse,
@@ -192,5 +193,38 @@ export function createDemoResponse(
     improvement_percentage_points: optimizedPercent - baselinePercent,
     synthetic: true,
     algorithm: "greedy_weighted_maximum_coverage_with_baseline_guard",
+  };
+}
+
+export function createDemoDecision(
+  scenario?: { metric: HeatMetric; resourceCount: number; coverageRadiusKm: number },
+): DecisionResponse {
+  const placement = createDemoResponse(scenario);
+  const actions = placement.optimized.placements.map(
+    (item) =>
+      `Priority ${item.order}: deploy at ${item.site.source_cell_id} and verify public access before activation.`,
+  );
+  return {
+    placement,
+    brief: {
+      headline: `Deploy ${placement.optimized.selected_resource_count} cooling points by priority`,
+      situation_summary:
+        `The optimized plan covers ${placement.optimized.covered_risk_percent.toFixed(1)}% ` +
+        `of modeled risk, versus ${placement.baseline.covered_risk_percent.toFixed(1)}% for ` +
+        `the naive baseline—a ${placement.improvement_percentage_points.toFixed(1)} percentage-point gain.`,
+      deployment_actions: actions,
+      watch_items: [
+        "Re-run when heat conditions, resource count, or service radius changes.",
+        "Confirm every cell centroid is a feasible and publicly accessible site.",
+      ],
+      limitations: [
+        "This illustrative brief uses synthetic data.",
+        "Risk coverage is not an estimate of illnesses or lives saved.",
+      ],
+      source: "template",
+      model: null,
+      evidence_fingerprint: "0".repeat(64),
+      grounded: true,
+    },
   };
 }

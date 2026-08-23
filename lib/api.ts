@@ -1,12 +1,12 @@
-import type { PlacementResponse, Scenario } from "@/lib/types";
+import type { DecisionResponse, Scenario } from "@/lib/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_HEATOPS_API_URL ?? "http://127.0.0.1:8000";
 
-export async function requestPlacementPlan(
+export async function requestDecision(
   scenario: Scenario,
   signal?: AbortSignal,
-): Promise<PlacementResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/placement-plans`, {
+): Promise<DecisionResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/decisions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     signal,
@@ -25,9 +25,10 @@ export async function requestPlacementPlan(
       },
       resource_count: scenario.resourceCount,
       coverage_radius_km: scenario.coverageRadiusKm,
+      prefer_ai_brief: true,
     }),
   });
 
   if (!response.ok) throw new Error(`HeatOps API returned ${response.status}`);
-  return response.json() as Promise<PlacementResponse>;
+  return response.json() as Promise<DecisionResponse>;
 }
