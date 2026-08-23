@@ -38,7 +38,10 @@ export function DecisionMap({ response }: { response: PlacementResponse }) {
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap contributors",
-      }).addTo(map);
+      });
+
+      map.fitBounds(geoJson.getBounds(), { padding: [24, 24] });
+      geoJson.addTo(map);
 
       const geoJson = L.geoJSON(response.risk_map as never, {
         style: (feature) => {
@@ -66,10 +69,7 @@ export function DecisionMap({ response }: { response: PlacementResponse }) {
             </div>
           `);
         },
-      });
-
-      map.fitBounds(geoJson.getBounds(), { padding: [24, 24] });
-      geoJson.addTo(map);
+      }).addTo(map);
 
       response.optimized.placements.forEach((placement) => {
         const { latitude, longitude } = placement.site;
@@ -91,7 +91,6 @@ export function DecisionMap({ response }: { response: PlacementResponse }) {
           .bindTooltip(`Cooling point ${placement.order}`, { direction: "top" })
           .addTo(map);
       });
-
     });
 
     return () => {
