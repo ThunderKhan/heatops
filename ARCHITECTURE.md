@@ -6,7 +6,7 @@
 2. External services sit behind interfaces.
 3. Raw data, derived scores, and recommendations remain distinguishable.
 4. A cached demonstration path is a product requirement.
-5. Domain logic stays independent of FastAPI and the eventual React interface.
+5. Domain logic stays independent of FastAPI and the React interface.
 
 ## Components
 
@@ -48,7 +48,7 @@ FastAPI validates requests and exposes domain operations. It contains no optimiz
 
 ### Web client
 
-The future React client will render layers, scenario controls, comparisons, explanations, and provenance.
+The Vinext/React client renders scenario controls, an interactive Leaflet/OpenStreetMap risk layer, optimized resource locations, a naive-baseline comparison, cell explanations, and visible data provenance. It calls FastAPI directly in local development and retains an explicitly labelled deterministic scenario if the API is unavailable.
 
 ## Initial package structure
 
