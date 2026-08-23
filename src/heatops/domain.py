@@ -1,3 +1,4 @@
+from datetime import date
 from enum import StrEnum
 from typing import Any, Literal
 
@@ -37,6 +38,9 @@ class HeatmapRequest(BaseModel):
     bounds: GeoBounds
     metric: HeatMetric = HeatMetric.SNAPSHOT
     threshold_c: float = Field(default=35.0, ge=-20, le=70)
+    start_date: date | None = None
+    start_time_utc: str | None = Field(default=None, pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    granularity_m: Literal[60, 80, 100] = 100
 
 
 class FeatureProperties(BaseModel):
@@ -64,4 +68,3 @@ class HeatmapFeatureCollection(BaseModel):
     type: Literal["FeatureCollection"] = "FeatureCollection"
     features: tuple[GeoJsonFeature, ...]
     synthetic: bool
-
