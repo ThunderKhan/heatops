@@ -66,7 +66,10 @@ export function DecisionMap({ response }: { response: PlacementResponse }) {
             </div>
           `);
         },
-      }).addTo(map);
+      });
+
+      map.fitBounds(geoJson.getBounds(), { padding: [24, 24] });
+      geoJson.addTo(map);
 
       response.optimized.placements.forEach((placement) => {
         const { latitude, longitude } = placement.site;
@@ -89,7 +92,6 @@ export function DecisionMap({ response }: { response: PlacementResponse }) {
           .addTo(map);
       });
 
-      map.fitBounds(geoJson.getBounds(), { padding: [24, 24] });
     });
 
     return () => {
