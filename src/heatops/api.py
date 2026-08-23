@@ -6,6 +6,9 @@ from heatops.config import Settings, get_settings
 from heatops.domain import HeatmapFeatureCollection, HeatmapRequest
 from heatops.providers.base import TemperatureProvider
 from heatops.providers.mock import MockTemperatureProvider
+from heatops.risk.context import SyntheticRiskContextProvider
+from heatops.risk.engine import RiskEngine
+from heatops.risk.models import RiskMapRequest, RiskMapResponse
 
 app = FastAPI(
     title="HeatOps API",
@@ -35,4 +38,19 @@ async def create_heatmap(
     provider: TemperatureProvider = Depends(get_provider),
 ) -> HeatmapFeatureCollection:
     return await provider.create_heatmap(request)
+
+
+@app.post("/api/v1/risk-maps", response_model=RiskMapResponse)
+async def create_risk_map(
+    request: RiskMapRequest,
+    provider: TemperatureProvider = Depends(get_provider),
+) -> RiskMapResponse:
+    heatmap = await provider.create_heatmap(request.heatmap)
+    contexts = SyntheticRiskContextProvider().create_context(heatmap)
+    return RiskEngine().assess(
+        heatmap=heatmap,
+        contexts=contexts,
+        weights=request.weights,
+        threshold_c=request.heatmap.threshold_c,
+    )
 

@@ -11,7 +11,7 @@ The MVP optimizes the placement of one generic temporary cooling resource, repre
 - [x] Preserve snapshot, exceedance, and persistence units.
 - [ ] Fetch and cache a real FortyGuard heatmap.
 - [ ] Display the heat layer on an interactive map.
-- [ ] Calculate an inspectable heat-risk score.
+- [x] Calculate an inspectable heat-risk score.
 - [ ] load candidate intervention locations.
 - [ ] Select up to `k` locations with a maximum-coverage optimizer.
 - [ ] Compare optimized placement with a naive baseline.
@@ -39,4 +39,3 @@ Every component must remain separately visible. The composite score is a priorit
 ## Done means
 
 A judge can select an event scenario, compare the unoptimized and optimized plans, change the number of available resources, and see a reproducible change in estimated vulnerable heat exposure coverage.
-

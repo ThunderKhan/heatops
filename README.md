@@ -10,13 +10,15 @@ HeatOps is being built for the FortyGuard Hackathon'26 across the Government & E
 
 ## Current milestone
 
-Milestone 1 provides:
+Milestone 2 adds an explainable risk engine to the Milestone 1 temperature pipeline:
 
-- a typed heatmap domain model;
-- a provider boundary for temperature services;
-- deterministic mock snapshot, exceedance, and persistence data;
-- a FastAPI endpoint returning GeoJSON;
-- tests that run without an API key or network access.
+- deterministic synthetic exposure, vulnerability, and cooling-access layers;
+- metric-aware heat-hazard normalization;
+- configurable, validated risk weights;
+- per-component contribution values;
+- low, moderate, high, and critical classifications;
+- a risk-enriched GeoJSON endpoint and summary;
+- mathematical invariant and API tests.
 
 The mock provider is deliberate. It allows the risk model, optimizer, map, and tests to be developed before hackathon API credentials arrive. It will later be replaced by a FortyGuard adapter without changing the rest of the application.
 
@@ -36,7 +38,8 @@ pytest
 uvicorn heatops.api:app --reload
 ```
 
-Open `http://127.0.0.1:8000/docs` and execute `POST /api/v1/heatmaps`.
+Open `http://127.0.0.1:8000/docs`. Execute `POST /api/v1/heatmaps` for the
+temperature layer or `POST /api/v1/risk-maps` for the enriched risk layer.
 
 Example body:
 
@@ -74,5 +77,5 @@ FortyGuard or mock provider
         -> interactive map and action brief
 ```
 
-See [MVP.md](MVP.md), [ARCHITECTURE.md](ARCHITECTURE.md), and [COMMIT_PLAN.md](COMMIT_PLAN.md).
-
+See [MVP.md](MVP.md), [ARCHITECTURE.md](ARCHITECTURE.md),
+[RISK_MODEL.md](RISK_MODEL.md), and [MILESTONE_2_COMMITS.md](MILESTONE_2_COMMITS.md).
