@@ -28,6 +28,8 @@ Implementations:
 
 Joins heat cells with exposure, vulnerability, and cooling-access layers. It emits both normalized components and a composite prioritization score.
 
+The hazard is a gate: a cell with no heat hazard receives zero heat-priority risk. Exposure, vulnerability, and lack of cooling access form a configurable weighted context score. Individual contributions remain visible in every result.
+
 ### Candidate-site service
 
 Loads feasible public intervention locations and rejects sites outside the area or without sufficient metadata.
@@ -54,10 +56,13 @@ src/heatops/
   providers/
     base.py
     mock.py
+  risk/
+    context.py
+    engine.py
+    models.py
 tests/
 ```
 
 ## FortyGuard integration boundary
 
 The concrete adapter will be implemented only after the hackathon credentials and current request schema are available. It will handle submit-and-poll task behavior, timeouts, validation, caching, and sanitized errors without leaking the API key.
-
