@@ -163,3 +163,33 @@ def test_placement_endpoint_validates_resource_constraints() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_decision_endpoint_returns_placement_and_grounded_brief() -> None:
+    response = client.post(
+        "/api/v1/decisions",
+        json={
+            "risk_map": {
+                "heatmap": {
+                    "bounds": {
+                        "north": 28.755,
+                        "south": 28.705,
+                        "east": -81.315,
+                        "west": -81.375,
+                    },
+                    "metric": "snapshot",
+                    "threshold_c": 35,
+                }
+            },
+            "resource_count": 5,
+            "coverage_radius_km": 0.75,
+            "prefer_ai_brief": True,
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["placement"]["optimized"]["selected_resource_count"] == 5
+    assert payload["brief"]["source"] == "template"
+    assert payload["brief"]["grounded"] is True
+    assert len(payload["brief"]["evidence_fingerprint"]) == 64
