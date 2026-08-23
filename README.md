@@ -10,14 +10,14 @@ HeatOps is being built for the FortyGuard Hackathon'26 across the Government & E
 
 ## Current milestone
 
-Milestone 4 turns the resource-placement engine into a judge-ready decision dashboard:
+Milestone 5 connects live temperature intelligence and turns optimizer evidence into an operational brief:
 
-- a working first screen with an explicitly labelled synthetic scenario;
-- React/Vinext scenario controls connected to the FastAPI placement endpoint;
-- an interactive Leaflet/OpenStreetMap risk layer with inspectable cell scores;
-- optimized cooling points, service radii, and a naive-baseline comparison;
-- a responsive operations-workspace design with loading and fallback states;
-- browser CORS configuration, frontend rendering tests, and existing domain tests.
+- a FortyGuard submit-and-poll provider for real GeoJSON heatmaps;
+- explicit live, synthetic, and mixed-provenance states;
+- a canonical evidence bundle and fingerprint for every recommendation;
+- optional Groq narration constrained to verified optimizer facts;
+- a deterministic briefing fallback requiring no LLM key;
+- downloadable Markdown action briefs and end-to-end decision tests.
 
 The mock provider is deliberate. It allows the risk model, optimizer, map, and tests to be developed before hackathon API credentials arrive. It will later be replaced by a FortyGuard adapter without changing the rest of the application.
 
@@ -65,7 +65,9 @@ Example body:
 }
 ```
 
-No real API key is required. If FastAPI is not running, the dashboard remains usable with an explicitly labelled illustrative scenario; changing resource count or service radius still produces deterministic demo changes.
+No key is required for the deterministic demo. To use your FortyGuard key, place it only in `.env` and set `HEATOPS_PROVIDER=fortyguard`. Use `auto` after verification if you want a synthetic fallback when the remote service is unavailable.
+
+A Groq key is optional. When `GROQ_API_KEY` is present, HeatOps uses `qwen/qwen3.6-27b` to narrate the verified evidence bundle. Without it—or if Groq fails—the action brief is generated deterministically. The optimizer, not the LLM, always selects locations.
 
 ## Scientific integrity
 
@@ -87,5 +89,6 @@ FortyGuard or mock provider
 ```
 
 See [MVP.md](MVP.md), [ARCHITECTURE.md](ARCHITECTURE.md), [DASHBOARD.md](DASHBOARD.md),
+[FORTYGUARD_INTEGRATION.md](FORTYGUARD_INTEGRATION.md), [AI_BRIEFING.md](AI_BRIEFING.md),
 [RISK_MODEL.md](RISK_MODEL.md), [OPTIMIZATION_MODEL.md](OPTIMIZATION_MODEL.md), and
-[MILESTONE_4_COMMITS.md](MILESTONE_4_COMMITS.md).
+[MILESTONE_5_COMMITS.md](MILESTONE_5_COMMITS.md).

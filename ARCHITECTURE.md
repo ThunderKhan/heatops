@@ -21,7 +21,7 @@ Returns validated GeoJSON features for one of three metrics:
 Implementations:
 
 - `MockTemperatureProvider`: current deterministic development provider;
-- `FortyGuardTemperatureProvider`: future asynchronous API adapter;
+- `FortyGuardTemperatureProvider`: asynchronous submit-and-poll API adapter;
 - `CachedTemperatureProvider`: future demo fallback using previously authorized responses.
 
 ### Risk engine
@@ -50,6 +50,10 @@ FastAPI validates requests and exposes domain operations. It contains no optimiz
 
 The Vinext/React client renders scenario controls, an interactive Leaflet/OpenStreetMap risk layer, optimized resource locations, a naive-baseline comparison, cell explanations, and visible data provenance. It calls FastAPI directly in local development and retains an explicitly labelled deterministic scenario if the API is unavailable.
 
+### Evidence-grounded briefing
+
+The briefing service converts a placement plan into a canonical evidence bundle and SHA-256 fingerprint. Groq may narrate only that bundle into a validated schema. If the key, model, network, or response is unavailable, a deterministic template produces the same schema. Neither narrator can change the optimizer output.
+
 ## Initial package structure
 
 ```text
@@ -73,4 +77,4 @@ tests/
 
 ## FortyGuard integration boundary
 
-The concrete adapter will be implemented only after the hackathon credentials and current request schema are available. It will handle submit-and-poll task behavior, timeouts, validation, caching, and sanitized errors without leaking the API key.
+The concrete adapter submits `POST /v1/heatmap`, polls `GET /v1/status/{activity_id}`, validates the completed GeoJSON, and maps it into the internal provider contract. API keys remain server-side. `auto` mode falls back to clearly labelled synthetic heat; `fortyguard` mode fails loudly for integration verification. Authorized response caching remains a later milestone.
