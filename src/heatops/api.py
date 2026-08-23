@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from heatops.config import Settings, get_settings
 from heatops.domain import HeatmapFeatureCollection, HeatmapRequest
@@ -17,6 +18,13 @@ app = FastAPI(
     title="HeatOps API",
     version="0.1.0",
     description="Explainable urban heat-response decision support.",
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_settings().cors_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -78,4 +86,3 @@ async def create_placement_plan(
         resource_count=request.resource_count,
         coverage_radius_km=request.coverage_radius_km,
     )
-

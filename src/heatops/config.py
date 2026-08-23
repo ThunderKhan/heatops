@@ -17,9 +17,17 @@ class Settings(BaseSettings):
     heatops_mock_grid_size: int = Field(default=8, ge=2, le=50)
     fortyguard_api_key: str | None = None
     fortyguard_base_url: str = "https://api.fortyguard.com"
+    heatops_cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.heatops_cors_origins.split(",")
+            if origin.strip()
+        ]
 
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

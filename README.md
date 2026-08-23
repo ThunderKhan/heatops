@@ -10,15 +10,14 @@ HeatOps is being built for the FortyGuard Hackathon'26 across the Government & E
 
 ## Current milestone
 
-Milestone 3 turns the explainable risk map into a resource-placement decision:
+Milestone 4 turns the resource-placement engine into a judge-ready decision dashboard:
 
-- deterministic candidate sites generated from risk-cell centroids;
-- geographic coverage calculated with haversine distance;
-- greedy weighted maximum-coverage optimization;
-- a highest-risk-cell baseline and non-regression guard;
-- covered-risk accounting and percentage-point improvement;
-- a placement-plan endpoint suitable for the future map;
-- deterministic, monotonicity, accounting, and API tests.
+- a working first screen with an explicitly labelled synthetic scenario;
+- React/Vinext scenario controls connected to the FastAPI placement endpoint;
+- an interactive Leaflet/OpenStreetMap risk layer with inspectable cell scores;
+- optimized cooling points, service radii, and a naive-baseline comparison;
+- a responsive operations-workspace design with loading and fallback states;
+- browser CORS configuration, frontend rendering tests, and existing domain tests.
 
 The mock provider is deliberate. It allows the risk model, optimizer, map, and tests to be developed before hackathon API credentials arrive. It will later be replaced by a FortyGuard adapter without changing the rest of the application.
 
@@ -35,10 +34,19 @@ python -m pip install -e ".[dev]"
 
 Copy-Item .env.example .env
 pytest
-uvicorn heatops.api:app --reload
+python -m uvicorn heatops.api:app --reload
 ```
 
-Open `http://127.0.0.1:8000/docs`. Execute `POST /api/v1/heatmaps` for the
+In a second PowerShell terminal:
+
+```powershell
+cd heatops
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` for the dashboard and `http://127.0.0.1:8000/docs`
+for the API. Execute `POST /api/v1/heatmaps` for the
 temperature layer, `POST /api/v1/risk-maps` for the enriched risk layer, or
 `POST /api/v1/placement-plans` for an optimized intervention plan.
 
@@ -57,7 +65,7 @@ Example body:
 }
 ```
 
-No real API key is required for this milestone.
+No real API key is required. If FastAPI is not running, the dashboard remains usable with an explicitly labelled illustrative scenario; changing resource count or service radius still produces deterministic demo changes.
 
 ## Scientific integrity
 
@@ -78,6 +86,6 @@ FortyGuard or mock provider
         -> interactive map and action brief
 ```
 
-See [MVP.md](MVP.md), [ARCHITECTURE.md](ARCHITECTURE.md),
+See [MVP.md](MVP.md), [ARCHITECTURE.md](ARCHITECTURE.md), [DASHBOARD.md](DASHBOARD.md),
 [RISK_MODEL.md](RISK_MODEL.md), [OPTIMIZATION_MODEL.md](OPTIMIZATION_MODEL.md), and
-[MILESTONE_3_COMMITS.md](MILESTONE_3_COMMITS.md).
+[MILESTONE_4_COMMITS.md](MILESTONE_4_COMMITS.md).
