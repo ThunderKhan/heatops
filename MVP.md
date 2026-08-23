@@ -12,9 +12,9 @@ The MVP optimizes the placement of one generic temporary cooling resource, repre
 - [ ] Fetch and cache a real FortyGuard heatmap.
 - [ ] Display the heat layer on an interactive map.
 - [x] Calculate an inspectable heat-risk score.
-- [ ] load candidate intervention locations.
-- [ ] Select up to `k` locations with a maximum-coverage optimizer.
-- [ ] Compare optimized placement with a naive baseline.
+- [x] Load deterministic candidate intervention locations.
+- [x] Select up to `k` locations with a maximum-coverage optimizer.
+- [x] Compare optimized placement with a naive baseline.
 - [ ] Explain selected locations.
 - [ ] Export a short heat-action brief.
 - [ ] Complete a deployed end-to-end demonstration.

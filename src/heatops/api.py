@@ -4,6 +4,9 @@ from fastapi import Depends, FastAPI
 
 from heatops.config import Settings, get_settings
 from heatops.domain import HeatmapFeatureCollection, HeatmapRequest
+from heatops.optimization.candidates import CellCentroidCandidateProvider
+from heatops.optimization.engine import PlacementOptimizer
+from heatops.optimization.models import PlacementRequest, PlacementResponse
 from heatops.providers.base import TemperatureProvider
 from heatops.providers.mock import MockTemperatureProvider
 from heatops.risk.context import SyntheticRiskContextProvider
@@ -45,6 +48,13 @@ async def create_risk_map(
     request: RiskMapRequest,
     provider: TemperatureProvider = Depends(get_provider),
 ) -> RiskMapResponse:
+    return await build_risk_map(request, provider)
+
+
+async def build_risk_map(
+    request: RiskMapRequest,
+    provider: TemperatureProvider,
+) -> RiskMapResponse:
     heatmap = await provider.create_heatmap(request.heatmap)
     contexts = SyntheticRiskContextProvider().create_context(heatmap)
     return RiskEngine().assess(
@@ -52,5 +62,20 @@ async def create_risk_map(
         contexts=contexts,
         weights=request.weights,
         threshold_c=request.heatmap.threshold_c,
+    )
+
+
+@app.post("/api/v1/placement-plans", response_model=PlacementResponse)
+async def create_placement_plan(
+    request: PlacementRequest,
+    provider: TemperatureProvider = Depends(get_provider),
+) -> PlacementResponse:
+    risk_map = await build_risk_map(request.risk_map, provider)
+    candidates = CellCentroidCandidateProvider().create_candidates(risk_map)
+    return PlacementOptimizer().optimize(
+        risk_map=risk_map,
+        candidates=candidates,
+        resource_count=request.resource_count,
+        coverage_radius_km=request.coverage_radius_km,
     )
 
